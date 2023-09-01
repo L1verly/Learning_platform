@@ -1,0 +1,10 @@
+alembic==1.11.2
+asyncpg==0.28.0
+envparse==0.2.0
+fastapi==0.101.1
+psycopg==3.1.10
+pydantic[email]
+SQLAlchemy==2.0.19
+uvicorn==0.23.2
+pytest
+httpx
