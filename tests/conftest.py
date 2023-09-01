@@ -4,14 +4,8 @@ from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.sql import text
 from starlette.testclient import TestClient
-
-import sys
-import os
-current = os.path.dirname(os.path.realpath(__file__))
-parent = os.path.dirname(current)
-sys.path.append(parent)
 import settings
-
+import os
 from main import app
 import asyncio
 from db.session import get_db
@@ -28,13 +22,14 @@ CLEAN_TABLES = [
     "users",
 ]
 
+
 @pytest.fixture(scope="session")
 def event_loop():
     loop = asyncio.get_event_loop_policy().new_event_loop()
     yield loop
     loop.close()
-    
-    
+
+
 @pytest.fixture(scope="session", autouse=True)
 async def run_migrations():
     os.system('alembic init migrations')

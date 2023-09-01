@@ -23,7 +23,3 @@ async def test_create_user(client, get_user_from_database):
     assert user_from_db["email"] == user_data["email"]
     assert user_from_db["is_active"] is True
     assert str(user_from_db["user_id"]) == data_from_resp["user_id"]
-    
-    
-    
-    
