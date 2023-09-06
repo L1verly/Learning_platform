@@ -7,7 +7,7 @@ For making migrations, unless alembic.ini exists, run in terminal:
 It creates a folder with migrations and config file for alembic
 
 - In alembic.ini assign db address, for making migrations in.
-- Go to folder with migrations and open env.py, where lines 
+- Go to folder with migrations and open env.py, where lines
 
 ```from myapp import mymodel```
 ```target_metadata = mymodel.Base.metadata```

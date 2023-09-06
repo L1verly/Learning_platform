@@ -1,6 +1,7 @@
 from typing import Generator
 
-from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.ext.asyncio import create_async_engine
 from sqlalchemy.orm import sessionmaker
 
 import settings
@@ -11,13 +12,11 @@ import settings
 ##############################################
 
 
-# create async engine for interaction with database
+# Create async session for interaction with database
 engine = create_async_engine(settings.REAL_DATABASE_URL, future=True, echo=True)
-
-# create session for the interaction with database
 async_session = sessionmaker(engine, expire_on_commit=False, class_=AsyncSession)
 
-# Generator for getting async session
+
 async def get_db() -> Generator:
     """Dependency for getting async session"""
     try:
@@ -25,4 +24,3 @@ async def get_db() -> Generator:
         yield session
     finally:
         await session.close()
-        
