@@ -117,16 +117,19 @@ async def update_user_by_id(
     user_id: UUID, body: UpdateUserRequest, db: AsyncSession = Depends(get_db)
 ) -> UpdatedUserResponse:
     updated_user_params = body.model_dump(exclude_none=True)
+    # Checks if there are any parameters passed for update
     if updated_user_params == {}:
         raise HTTPException(
             status_code=422,
             detail="At least one parameter for user update info should be provided",
         )
     user = await _get_user_by_id(user_id, db)
+    # Checks if user was found
     if user is None:
         raise HTTPException(
             status_code=404, detail=f"User with id {user_id} not found."
         )
+    # Ensures there is no error during updating user
     try:
         updated_user_id = await _update_user(
             updated_user_params=updated_user_params, db=db, user_id=user_id

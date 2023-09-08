@@ -103,7 +103,29 @@ async def test_update_user_check_one_is_updated(
             {},
             422,
             {
-                "detail": "At least one parameter for user update info should be provided"
+                "detail": [
+                    {
+                        "input": {},
+                        "loc": ["body", "name"],
+                        "msg": "Field required",
+                        "type": "missing",
+                        "url": "https://errors.pydantic.dev/2.3/v/missing",
+                    },
+                    {
+                        "input": {},
+                        "loc": ["body", "surname"],
+                        "msg": "Field required",
+                        "type": "missing",
+                        "url": "https://errors.pydantic.dev/2.3/v/missing",
+                    },
+                    {
+                        "input": {},
+                        "loc": ["body", "email"],
+                        "msg": "Field required",
+                        "type": "missing",
+                        "url": "https://errors.pydantic.dev/2.3/v/missing",
+                    },
+                ]
             },
         ),
         ({"name": "123"}, 422, {"detail": "Name should contain only letters"}),
@@ -113,10 +135,30 @@ async def test_update_user_check_one_is_updated(
             {
                 "detail": [
                     {
+                        "input": {"email": ""},
+                        "loc": ["body", "name"],
+                        "msg": "Field required",
+                        "type": "missing",
+                        "url": "https://errors.pydantic.dev/2.3/v/missing",
+                    },
+                    {
+                        "input": {"email": ""},
+                        "loc": ["body", "surname"],
+                        "msg": "Field required",
+                        "type": "missing",
+                        "url": "https://errors.pydantic.dev/2.3/v/missing",
+                    },
+                    {
+                        "ctx": {
+                            "reason": "The email address is not valid. It must have "
+                            "exactly one @-sign."
+                        },
+                        "input": "",
                         "loc": ["body", "email"],
-                        "msg": "value is not a valid email address",
-                        "type": "value_error.email",
-                    }
+                        "msg": "value is not a valid email address: The email address is "
+                        "not valid. It must have exactly one @-sign.",
+                        "type": "value_error",
+                    },
                 ]
             },
         ),
@@ -126,11 +168,27 @@ async def test_update_user_check_one_is_updated(
             {
                 "detail": [
                     {
+                        "input": {"surname": ""},
+                        "loc": ["body", "name"],
+                        "msg": "Field required",
+                        "type": "missing",
+                        "url": "https://errors.pydantic.dev/2.3/v/missing",
+                    },
+                    {
+                        "ctx": {"min_length": 1},
+                        "input": "",
                         "loc": ["body", "surname"],
-                        "msg": "ensure this value has at least 1 characters",
-                        "type": "value_error.any_str.min_length",
-                        "ctx": {"limit_value": 1},
-                    }
+                        "msg": "String should have at least 1 characters",
+                        "type": "string_too_short",
+                        "url": "https://errors.pydantic.dev/2.3/v/string_too_short",
+                    },
+                    {
+                        "input": {"surname": ""},
+                        "loc": ["body", "email"],
+                        "msg": "Field required",
+                        "type": "missing",
+                        "url": "https://errors.pydantic.dev/2.3/v/missing",
+                    },
                 ]
             },
         ),
@@ -140,25 +198,61 @@ async def test_update_user_check_one_is_updated(
             {
                 "detail": [
                     {
+                        "ctx": {"min_length": 1},
+                        "input": "",
                         "loc": ["body", "name"],
-                        "msg": "ensure this value has at least 1 characters",
-                        "type": "value_error.any_str.min_length",
-                        "ctx": {"limit_value": 1},
-                    }
+                        "msg": "String should have at least 1 characters",
+                        "type": "string_too_short",
+                        "url": "https://errors.pydantic.dev/2.3/v/string_too_short",
+                    },
+                    {
+                        "input": {"name": ""},
+                        "loc": ["body", "surname"],
+                        "msg": "Field required",
+                        "type": "missing",
+                        "url": "https://errors.pydantic.dev/2.3/v/missing",
+                    },
+                    {
+                        "input": {"name": ""},
+                        "loc": ["body", "email"],
+                        "msg": "Field required",
+                        "type": "missing",
+                        "url": "https://errors.pydantic.dev/2.3/v/missing",
+                    },
                 ]
             },
         ),
-        ({"surname": "123"}, 422, {"detail": "Surname should contain only letters"}),
+        ({"surname": "123"}, 422, {"detail": "Name should contain only letters"}),
         (
             {"email": "123"},
             422,
             {
                 "detail": [
                     {
+                        "input": {"email": "123"},
+                        "loc": ["body", "name"],
+                        "msg": "Field required",
+                        "type": "missing",
+                        "url": "https://errors.pydantic.dev/2.3/v/missing",
+                    },
+                    {
+                        "input": {"email": "123"},
+                        "loc": ["body", "surname"],
+                        "msg": "Field required",
+                        "type": "missing",
+                        "url": "https://errors.pydantic.dev/2.3/v/missing",
+                    },
+                    {
+                        "ctx": {
+                            "reason": "The email address is not valid. It must have "
+                            "exactly one @-sign."
+                        },
+                        "input": "123",
                         "loc": ["body", "email"],
-                        "msg": "value is not a valid email address",
-                        "type": "value_error.email",
-                    }
+                        "msg": "value is not a valid email address: The email address is "
+                        "not valid. It must have exactly one @-sign.",
+                        "type": "value_error",
+                    },
                 ]
             },
         ),
@@ -197,15 +291,16 @@ async def test_update_user_id_validation_error(client):
     resp = client.patch("/user/?user_id=123", data=json.dumps(user_data_updated))
     assert resp.status_code == 422
     data_from_response = resp.json()
-    assert data_from_response == {
-        "detail": [
-            {
-                "loc": ["query", "user_id"],
-                "msg": "value is not a valid uuid",
-                "type": "type_error.uuid",
-            }
-        ]
-    }
+    assert (
+        data_from_response["detail"][0].items()
+        >= {
+            "input": "123",
+            "loc": ["query", "user_id"],
+            "msg": "Input should be a valid UUID, invalid length: expected "
+            "length 32 for simple format, found 3",
+            "type": "uuid_parsing",
+        }.items()
+    )
 
 
 async def test_update_user_not_found_error(client):

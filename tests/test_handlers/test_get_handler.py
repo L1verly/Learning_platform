@@ -25,8 +25,8 @@ async def test_get_user_id_validation_error(
 ):
     user_data = {
         "user_id": uuid4(),
-        "name": "Artem Budzhak",
-        "surname": "Artem Budzhak",
+        "name": "Artem",
+        "surname": "Budzhak",
         "email": "lol@kek.com",
         "is_active": True,
     }
@@ -34,15 +34,16 @@ async def test_get_user_id_validation_error(
     resp = client.get("/user/?user_id=123")
     assert resp.status_code == 422
     data_from_response = resp.json()
-    assert data_from_response == {
-        "detail": [
-            {
-                "loc": ["query", "user_id"],
-                "msg": "value is not a valid uuid",
-                "type": "type_error.uuid",
-            }
-        ]
-    }
+    assert (
+        data_from_response["detail"][0].items()
+        >= {
+            "input": "123",
+            "loc": ["query", "user_id"],
+            "msg": "Input should be a valid UUID, invalid length: expected "
+            "length 32 for simple format, found 3",
+            "type": "uuid_parsing",
+        }.items()
+    )
 
 
 async def test_get_user_not_found(
@@ -50,8 +51,8 @@ async def test_get_user_not_found(
 ):
     user_data = {
         "user_id": uuid4(),
-        "name": "Nikolai",
-        "surname": "Sviridov",
+        "name": "Artem",
+        "surname": "Budzhak",
         "email": "lol@kek.com",
         "is_active": True,
     }

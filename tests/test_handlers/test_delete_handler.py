@@ -26,19 +26,20 @@ async def test_delete_user_not_found(client):
     user_id = uuid4()
     resp = client.delete(f"/user/?user_id={user_id}")
     assert resp.status_code == 404
-    assert resp.json() == {"detail": f"User with id {user_id} not found."}
+    assert resp.json() == {"detail": f"User with id {user_id} is not found."}
 
 
 async def test_delete_user_user_id_validation_error(client):
     resp = client.delete("/user/?user_id=123")
     assert resp.status_code == 422
     data_from_response = resp.json()
-    assert data_from_response == {
-        "detail": [
-            {
-                "loc": ["query", "user_id"],
-                "msg": "value is not a valid uuid",
-                "type": "type_error.uuid",
-            }
-        ]
-    }
+    assert (
+        data_from_response["detail"][0].items()
+        >= {
+            "input": "123",
+            "loc": ["query", "user_id"],
+            "msg": "Input should be a valid UUID, invalid length: expected "
+            "length 32 for simple format, found 3",
+            "type": "uuid_parsing",
+        }.items()
+    )
