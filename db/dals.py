@@ -21,13 +21,13 @@ class UserDAL:
         # Initializing database session
         self.db_session = db_session
 
-    async def create_user(self, name: str, surname: str, email: str) -> User:
+    async def create_user(
+        self, name: str, surname: str, email: str, hashed_password: str
+    ) -> User:
         """Method for creating new user"""
         # User parameters
         new_user = User(
-            name=name,
-            surname=surname,
-            email=email,
+            name=name, surname=surname, email=email, hashed_password=hashed_password
         )
         # Adding user info to db
         self.db_session.add(new_user)
@@ -48,6 +48,13 @@ class UserDAL:
 
     async def get_user_by_id(self, user_id: UUID) -> Optional[User]:
         query = select(User).where(User.user_id == user_id)
+        res = await self.db_session.execute(query)
+        user_row = res.fetchone()
+        if user_row is not None:
+            return user_row[0]
+
+    async def get_user_by_email(self, email):
+        query = select(User).where(User.email == email)
         res = await self.db_session.execute(query)
         user_row = res.fetchone()
         if user_row is not None:

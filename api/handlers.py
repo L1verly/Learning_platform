@@ -15,6 +15,7 @@ from api.models import UpdateUserRequest
 from api.models import UserCreate
 from db.dals import UserDAL
 from db.session import get_db
+from hashing import Hasher
 
 logger = getLogger(__name__)
 
@@ -30,6 +31,7 @@ async def _create_new_user(body: UserCreate, db) -> ShowUser:
                 name=body.name,
                 surname=body.surname,
                 email=body.email,
+                hashed_password=Hasher.get_password_hash(body.password),
             )
             return ShowUser(
                 user_id=user.user_id,
@@ -40,7 +42,7 @@ async def _create_new_user(body: UserCreate, db) -> ShowUser:
             )
 
 
-async def _delete_user(user_id, db) -> Optional[UUID]:
+async def _delete_user(user_id, db: AsyncSession) -> Optional[UUID]:
     """Handler for deleting existing user"""
 
     async with db as session:
