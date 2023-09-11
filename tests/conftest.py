@@ -1,7 +1,10 @@
 import asyncio
+import json
 import os
+from datetime import timedelta
 from typing import Any
 from typing import Generator
+from uuid import UUID
 
 import asyncpg
 import pytest
@@ -14,7 +17,8 @@ from starlette.testclient import TestClient
 import settings
 from db.session import get_db
 from main import app
-
+from security import create_access_token
+from security import UUIDEncoder
 
 CLEAN_TABLES = [
     "users",
@@ -122,3 +126,12 @@ async def create_user_in_database(asyncpg_pool):
             )
 
     return create_user_in_database
+
+
+def create_test_auth_headers_for_user(user_id: UUID) -> dict[str, str]:
+    encoded_uuid = json.dumps(user_id, cls=UUIDEncoder)
+    access_token = create_access_token(
+        data={"sub": encoded_uuid},
+        expires_delta=timedelta(minutes=settings.ACCESS_TOKE_EXPIRE_MINUTES),
+    )
+    return {"Authorization": f"Bearer {access_token}"}
