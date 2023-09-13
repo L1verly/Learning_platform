@@ -5,6 +5,7 @@ from sqlalchemy import select
 from sqlalchemy import update
 from sqlalchemy import UUID
 from sqlalchemy.ext.asyncio import AsyncSession
+from strenum import StrEnum
 
 from db.models import User
 
@@ -12,6 +13,12 @@ from db.models import User
 ###########################################################
 # BLOCK FOR INTERACTION WITH DATABASE IN BUSINESS CONTEXT #
 ###########################################################
+
+
+class PortalRole(StrEnum):
+    ROLE_PORTAL_USER = "ROLE_PORTAL_USER"
+    ROLE_PORTAL_ADMIN = "ROLE_PORTAL_ADMIN"
+    ROLE_PORTAL_SUPERADMIN = "ROLE_PORTAL_SUPERADMIN"
 
 
 class UserDAL:
@@ -22,12 +29,21 @@ class UserDAL:
         self.db_session = db_session
 
     async def create_user(
-        self, name: str, surname: str, email: str, hashed_password: str
+        self,
+        name: str,
+        surname: str,
+        email: str,
+        hashed_password: str,
+        roles: list[PortalRole],
     ) -> User:
         """Method for creating new user"""
         # User parameters
         new_user = User(
-            name=name, surname=surname, email=email, hashed_password=hashed_password
+            name=name,
+            surname=surname,
+            email=email,
+            hashed_password=hashed_password,
+            roles=roles,
         )
         # Adding user info to db
         self.db_session.add(new_user)
