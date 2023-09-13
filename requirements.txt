@@ -13,3 +13,5 @@ python-multipart
 passlib~=1.7.4
 pre-commit
 python-jose
+
+StrEnum~=0.4.15

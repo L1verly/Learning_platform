@@ -1,8 +1,8 @@
-"""test running migrations
+"""auth
 
-Revision ID: 384416623d4a
-Revises: 7272c65604bb
-Create Date: 2023-09-06 22:53:45.383272
+Revision ID: 98eb763fce70
+Revises: c05fa495bb51
+Create Date: 2023-09-09 22:51:14.008748
 
 """
 from typing import Sequence
@@ -13,8 +13,8 @@ from alembic import op
 
 
 # revision identifiers, used by Alembic.
-revision: str = "384416623d4a"
-down_revision: Union[str, None] = "7272c65604bb"
+revision: str = "98eb763fce70"
+down_revision: Union[str, None] = "c05fa495bb51"
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 

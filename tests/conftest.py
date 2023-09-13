@@ -15,6 +15,7 @@ from sqlalchemy.sql import text
 from starlette.testclient import TestClient
 
 import settings
+from db.dals import PortalRole
 from db.session import get_db
 from main import app
 from security import create_access_token
@@ -34,7 +35,7 @@ def event_loop():
 
 @pytest.fixture(scope="session", autouse=True)
 async def run_migrations():
-    os.system("alembic init migrations")
+    os.chdir("../")
     os.system('alembic revision --autogenerate -m "test running migrations"')
     os.system("alembic upgrade heads")
 
@@ -113,16 +114,18 @@ async def create_user_in_database(asyncpg_pool):
         email: str,
         is_active: bool,
         hashed_password: str,
+        roles: list[PortalRole],
     ):
         async with asyncpg_pool.acquire() as connection:
             return await connection.execute(
-                """INSERT INTO users VALUES ($1, $2, $3, $4, $5, $6)""",
+                """INSERT INTO users VALUES ($1, $2, $3, $4, $5, $6, $7)""",
                 user_id,
                 name,
                 surname,
                 email,
                 is_active,
                 hashed_password,
+                roles,
             )
 
     return create_user_in_database
