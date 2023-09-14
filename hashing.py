@@ -5,7 +5,7 @@ pwd_context = CryptContext(schemes=["sha256_crypt"])
 
 class Hasher:
     @staticmethod
-    def verify_password(plain_password, hashed_password) -> bool:
+    def verify_password(plain_password: str, hashed_password: str) -> bool:
         return pwd_context.verify(plain_password, hashed_password)
 
     @staticmethod
