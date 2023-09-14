@@ -5,20 +5,14 @@ from sqlalchemy import select
 from sqlalchemy import update
 from sqlalchemy import UUID
 from sqlalchemy.ext.asyncio import AsyncSession
-from strenum import StrEnum
 
+from db.models import PortalRole
 from db.models import User
 
 
 ###########################################################
 # BLOCK FOR INTERACTION WITH DATABASE IN BUSINESS CONTEXT #
 ###########################################################
-
-
-class PortalRole(StrEnum):
-    ROLE_PORTAL_USER = "ROLE_PORTAL_USER"
-    ROLE_PORTAL_ADMIN = "ROLE_PORTAL_ADMIN"
-    ROLE_PORTAL_SUPERADMIN = "ROLE_PORTAL_SUPERADMIN"
 
 
 class UserDAL:

@@ -6,6 +6,7 @@ from sqlalchemy import String
 from sqlalchemy.dialects.postgresql import ARRAY
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import declarative_base
+from strenum import StrEnum
 
 ##############################
 # BLOCK WITH DATABASE MODELS #
@@ -13,6 +14,13 @@ from sqlalchemy.orm import declarative_base
 
 
 Base = declarative_base()
+
+
+# Class with user roles
+class PortalRole(StrEnum):
+    ROLE_PORTAL_USER = "ROLE_PORTAL_USER"
+    ROLE_PORTAL_ADMIN = "ROLE_PORTAL_ADMIN"
+    ROLE_PORTAL_SUPERADMIN = "ROLE_PORTAL_SUPERADMIN"
 
 
 # SQLAlchemy Model User for interaction with database
@@ -26,3 +34,19 @@ class User(Base):
     is_active = Column(Boolean, default=True)
     hashed_password = Column(String, nullable=False)
     roles = Column(ARRAY(String), nullable=False)
+
+    @property
+    def is_superadmin(self) -> bool:
+        return PortalRole.ROLE_PORTAL_SUPERADMIN in self.roles
+
+    @property
+    def is_admin(self) -> bool:
+        return PortalRole.ROLE_PORTAL_ADMIN in self.roles
+
+    def add_admin_privileges_to_model(self) -> set:
+        if not self.is_admin:
+            return {*self.roles, PortalRole.ROLE_PORTAL_ADMIN}
+
+    def remove_admin_privileges_from_model(self) -> set:
+        if self.is_admin:
+            return {role for role in self.roles if role != PortalRole.ROLE_PORTAL_ADMIN}
