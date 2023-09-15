@@ -387,6 +387,50 @@ async def test_update_user_duplicate_email_error(client, create_user_in_database
     )
 
 
+async def test_admin_update_other_admin(
+    client, create_user_in_database, get_user_from_database
+):
+    user_for_update = {
+        "user_id": uuid4(),
+        "name": "Artem",
+        "surname": "Budzhak",
+        "email": "artem@example.com",
+        "is_active": True,
+        "hashed_password": "SampleHashedPass",
+        "roles": [PortalRole.ROLE_PORTAL_USER, PortalRole.ROLE_PORTAL_ADMIN],
+    }
+    user_data_who_updates = {
+        "user_id": uuid4(),
+        "name": "Arnold",
+        "surname": "Schwarzenegger",
+        "email": "arnie@example.com",
+        "is_active": True,
+        "hashed_password": "SampleHashedPass",
+        "roles": [PortalRole.ROLE_PORTAL_USER, PortalRole.ROLE_PORTAL_ADMIN],
+    }
+    user_data_updated = {
+        "name": "Leo",
+        "surname": "Vinci",
+        "email": "cheburek@kek.com",
+    }
+    for user_data in [user_for_update, user_data_who_updates]:
+        await create_user_in_database(**user_data)
+    resp = client.patch(
+        f"/user/admin_privilege?user_id={user_for_update['user_id']}",
+        json=user_data_updated,
+        headers=create_test_auth_headers_for_user(user_for_update["user_id"]),
+    )
+    data_from_resp = resp.json()
+    assert resp.status_code == 403
+    assert data_from_resp == {"detail": "Forbidden."}
+    not_updated_user_from_db = await get_user_from_database(user_for_update["user_id"])
+    # Check that only one user was not changed
+    assert len(not_updated_user_from_db) == 1
+    not_updated_user_from_db = dict(not_updated_user_from_db[0])
+    # Check if correct user was not updated
+    assert not_updated_user_from_db["user_id"] == user_for_update["user_id"]
+
+
 async def _patch_and_validate_user(
     client, user_data: dict, user_data_updated, get_user_from_database
 ):
