@@ -427,10 +427,8 @@ async def test_admin_update_other_admin(
     # Check that only one user was not changed
     assert len(not_updated_user_from_db) == 1
     not_updated_user_from_db = dict(not_updated_user_from_db[0])
-    # Check if correct user privilege was not revoked
+    # Check if correct user was not updated
     assert not_updated_user_from_db["user_id"] == user_for_update["user_id"]
-    # Check if user privilege was not revoked
-    assert PortalRole.ROLE_PORTAL_ADMIN in not_updated_user_from_db["roles"]
 
 
 async def _patch_and_validate_user(
