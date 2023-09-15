@@ -1,5 +1,7 @@
 # Learning_platform
 
+## Migrations
+
 For making migrations, unless alembic.ini exists, run in terminal:
 
 ```alembic init migrations```
