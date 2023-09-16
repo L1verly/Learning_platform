@@ -4,8 +4,8 @@ from uuid import UUID
 from fastapi import HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from api.models import ShowUser
-from api.models import UserCreate
+from api.schemas import ShowUser
+from api.schemas import UserCreate
 from db.dals import PortalRole
 from db.dals import UserDAL
 from db.models import User
