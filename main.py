@@ -2,6 +2,8 @@ import sentry_sdk
 import uvicorn
 from fastapi import FastAPI
 from fastapi.routing import APIRouter
+from starlette_exporter import handle_metrics
+from starlette_exporter import PrometheusMiddleware
 
 import settings
 from api.handlers import user_router
@@ -27,6 +29,8 @@ sentry_sdk.init(
 
 # Create instance of the app
 app = FastAPI(title="learning-platform")
+app.add_middleware(PrometheusMiddleware)
+app.add_route("/metrics", handle_metrics)
 
 # Create the instance for the routes
 main_api_router = APIRouter()

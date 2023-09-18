@@ -15,3 +15,4 @@ pre-commit
 python-jose
 StrEnum~=0.4.15
 sentry-sdk[fastapi]
+starlette-exporter
