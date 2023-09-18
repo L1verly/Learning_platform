@@ -3,7 +3,7 @@ from envparse import Env
 
 env = Env()
 
-APP_PORT: int = env.int("APP_PORT", default=8000)
+APP_PORT: int = env.int("APP_PORT")
 
 REAL_DATABASE_URL = env.str(
     "REAL_DATABASE_URL",
